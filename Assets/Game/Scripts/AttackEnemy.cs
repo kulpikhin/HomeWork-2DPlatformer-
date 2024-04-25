@@ -10,7 +10,7 @@ public class AttackEnemy : MonoBehaviour
     private bool _isRecharge;
     private bool _CanAttack;
     private WaitForSeconds _waitTime;
-    private Player _target;
+    private PlayerHealth _target;
 
     private void Awake()
     {
@@ -26,7 +26,7 @@ public class AttackEnemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<Player>(out Player player))
+        if (collision.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth player))
         {
             _target = player;
             _CanAttack = true;
@@ -35,7 +35,7 @@ public class AttackEnemy : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<Player>(out Player player))
+        if (collision.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth player))
         {
             _target = null;
             _CanAttack = false;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyActions : MonoBehaviour
@@ -10,6 +8,7 @@ public class EnemyActions : MonoBehaviour
     public Transform _playerTarget;
     private Transform _pointTarget;
     private Transform[] _points;
+
     private int _countPoints;
 
     public Transform PlayerTarget { set => _playerTarget = value; }

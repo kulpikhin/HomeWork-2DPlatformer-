@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -9,6 +10,7 @@ public class Controller : MonoBehaviour
     [SerializeField] private float _jumpPower;
     [SerializeField] private GameObject _playerSprite;
     [SerializeField] private LayerMask _ground;
+    [SerializeField] private Canvas _canvas;
 
     private Vector2 _direction;
     private Animator _animator;
@@ -29,7 +31,7 @@ public class Controller : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         Move();
         Reflect();
@@ -52,11 +54,14 @@ public class Controller : MonoBehaviour
 
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && _isOnGround && _CanJump)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            _rigidBody.AddForce(Vector2.up * _jumpPower);
-            _CanJump = false;
-            StartCoroutine(WaitJump());
+            if(_isOnGround && _CanJump)
+            {
+                _rigidBody.AddForce(Vector2.up * _jumpPower);
+                _CanJump = false;
+                StartCoroutine(WaitJump());
+            }
         }
     }
 
@@ -71,6 +76,7 @@ public class Controller : MonoBehaviour
         if ((_isFaceRight == false && _direction.x > 0) || (_isFaceRight && _direction.x < 0))
         {
             transform.localScale *= new Vector2(-1, 1);
+            _canvas.transform.localScale *= new Vector2(-1, 1);
             _isFaceRight = !_isFaceRight;
         }
     }
