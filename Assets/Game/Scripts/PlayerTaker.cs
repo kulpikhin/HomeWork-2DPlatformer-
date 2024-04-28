@@ -1,12 +1,13 @@
 using UnityEngine;
 
-public class PlayerTakeItems : MonoBehaviour
+[RequireComponent (typeof(Player))]
+public class PlayerTaker : MonoBehaviour
 {
-    private PlayerHealth _health;
+    private Player _player;
 
     private void Awake()
     {
-        _health = GetComponent<PlayerHealth>();
+        _player = GetComponent<Player>();
     }
 
     private void TakeCoin(Coin coin)
@@ -16,7 +17,7 @@ public class PlayerTakeItems : MonoBehaviour
 
     private void TakeApple(Apple apple)
     {
-        _health.Heal(apple.HealingPower);
+        _player.HealthOwn.Heal(apple.HealingPower);
         apple.BecomeRecived();
     }
 

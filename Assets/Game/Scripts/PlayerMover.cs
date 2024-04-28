@@ -1,42 +1,59 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Animator))]
 
-public class Controller : MonoBehaviour
+public class PlayerMover : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpPower;
-    [SerializeField] private GameObject _playerSprite;
+    [SerializeField] private SpriteRenderer _playerSprite;
     [SerializeField] private LayerMask _ground;
     [SerializeField] private Canvas _canvas;
+    [SerializeField] private InputSystem _inputSystem;
 
+    private bool _isOnGround;
+    private bool _canJump;
+    private bool _isFaceRight;
+
+    private float _overlapRadius;
     private Vector2 _direction;
     private Animator _animator;
     private Rigidbody2D _rigidBody;
-    private bool _isOnGround;
-    private bool _CanJump;
-    private bool _isFaceRight;
-    private float _overlapRadius;
 
-    public bool IsFaceRight { get => _isFaceRight; }
+    public bool IsFaceRight => _isFaceRight;
 
     private void Awake()
     {
-        _CanJump = true;
+        _canJump = true;
         _overlapRadius = 0.5f;
         _animator = _playerSprite.GetComponent<Animator>();
         _isFaceRight = true;
         _rigidBody = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void OnEnable()
+    {
+        _inputSystem.HorisontalKeyGeted += SetDirection;
+        _inputSystem.JumpKeyGeted += Jump;
+    }
+
+    private void OnDisable()
+    {
+        _inputSystem.HorisontalKeyGeted -= SetDirection;
+        _inputSystem.JumpKeyGeted -= Jump;
+    }
+
+    private void FixedUpdate()
     {
         Move();
-        Reflect();
-        Jump();
         CheckGround();
+    }
+
+    private void SetDirection(Vector2 direction)
+    {
+        _direction = direction;
     }
 
     private void CheckGround()
@@ -47,28 +64,25 @@ public class Controller : MonoBehaviour
 
     private void Move()
     {
-        _direction.x = Input.GetAxis("Horizontal");
         _animator.SetFloat(PlayerAnimatorData.Params.IsMove, Mathf.Abs(_direction.x));
         _rigidBody.velocity = new Vector2(_direction.x * _speed, _rigidBody.velocity.y);
+        Reflect();
     }
 
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (_isOnGround && _canJump)
         {
-            if(_isOnGround && _CanJump)
-            {
-                _rigidBody.AddForce(Vector2.up * _jumpPower);
-                _CanJump = false;
-                StartCoroutine(WaitJump());
-            }
+            _canJump = false;
+            _rigidBody.AddForce(Vector2.up * _jumpPower);
+            StartCoroutine(WaitJump());
         }
     }
 
     private IEnumerator WaitJump()
     {
         yield return null;
-        _CanJump = true;
+        _canJump = true;
     }
 
     private void Reflect()

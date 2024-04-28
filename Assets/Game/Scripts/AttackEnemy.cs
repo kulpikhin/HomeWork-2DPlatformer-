@@ -5,12 +5,13 @@ public class AttackEnemy : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _explosion;
 
+    private bool _isRecharge;
+    private bool _canAttack;
+
     private int _damage;
     private float _attackSpeed;
-    private bool _isRecharge;
-    private bool _CanAttack;
     private WaitForSeconds _waitTime;
-    private PlayerHealth _target;
+    private Player _target;
 
     private void Awake()
     {
@@ -26,27 +27,27 @@ public class AttackEnemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth player))
+        if (collision.gameObject.TryGetComponent(out Player player))
         {
             _target = player;
-            _CanAttack = true;
+            _canAttack = true;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth player))
+        if (collision.gameObject.TryGetComponent(out Player player))
         {
             _target = null;
-            _CanAttack = false;
+            _canAttack = false;
         }
     }
 
     private void Attack()
     {
-        if (_CanAttack && _isRecharge == false)
+        if (_canAttack && _isRecharge == false)
         {
-            _target.GetDamage(_damage);
+            _target.HealthOwn.GetDamage(_damage);
             _explosion.Play();
             StartCoroutine(Recharge());
         }            

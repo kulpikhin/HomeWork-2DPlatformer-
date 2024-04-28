@@ -5,7 +5,7 @@ public class EnemyActions : MonoBehaviour
     [SerializeField] private Transform _path;
     [SerializeField] private float _speed;
 
-    public Transform _playerTarget;
+    private Transform _playerTarget;
     private Transform _pointTarget;
     private Transform[] _points;
 

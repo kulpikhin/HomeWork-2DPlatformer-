@@ -100,10 +100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989ebae6b4248954697ce0b3d443c89f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ground:
+  _lightning: {fileID: 8740796731788304700}
+  _groundMask:
     serializedVersion: 2
     m_Bits: 64
-  _lightning: {fileID: 8740796731788304700}
 --- !u!50 &4038710256871404391
 Rigidbody2D:
   serializedVersion: 4

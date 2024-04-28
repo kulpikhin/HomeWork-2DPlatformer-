@@ -1,10 +1,9 @@
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class Sensor : MonoBehaviour
 {
     private EnemyActions _enemy;
-    private PlayerHealth _target;
+    private Player _target;
 
     private void Awake()
     {
@@ -13,10 +12,10 @@ public class Sensor : MonoBehaviour
 
     private void Update()
     {
-        CheckTarget();
+        FindTarget();
     }
 
-    private void CheckTarget()
+    private void FindTarget()
     {
         if (_target != null)
         {
@@ -33,7 +32,7 @@ public class Sensor : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth player) && player.IsAlive)
+        if (collision.gameObject.TryGetComponent(out Player player) && player.IsAlive)
         {
             _target = player;
         }
@@ -41,7 +40,7 @@ public class Sensor : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<PlayerHealth>(out PlayerHealth player))
+        if (collision.gameObject.TryGetComponent(out Player player))
         {            
             _target = null;
             _enemy.PlayerTarget = null;

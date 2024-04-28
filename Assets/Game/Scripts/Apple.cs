@@ -2,14 +2,9 @@ using UnityEngine;
 
 public class Apple : MonoBehaviour
 {
-    private int _healingPower;
+    private int _healingPower = 40;
 
     public int HealingPower => _healingPower;
-
-    private void Awake()
-    {
-        _healingPower = 40;
-    }
 
     public void BecomeRecived()
     {
