@@ -8,10 +8,12 @@ public class InputSystem : MonoBehaviour
 
     private KeyCode _jumpKey = KeyCode.Space;
     private KeyCode _shootKey = KeyCode.L;
+    private KeyCode _vampirismKey = KeyCode.K;
 
     public event UnityAction<Vector2> HorisontalKeyGeted;
     public event UnityAction JumpKeyGeted;
     public event UnityAction ShootKeyGeted;
+    public event UnityAction VampirismKeyGeted;
 
 
     private void Update()
@@ -32,6 +34,11 @@ public class InputSystem : MonoBehaviour
         if (Input.GetKeyDown(_jumpKey))
         {
             JumpKeyGeted?.Invoke();
+        }
+
+        if (Input.GetKeyDown(_vampirismKey))
+        {
+            VampirismKeyGeted?.Invoke();
         }
     }
 }

@@ -6,11 +6,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] private Vampirism _vampirism;
+
     private Animator _animator;
     private PlayerMover _playerMover;
 
     public bool IsAlive { get; private set; } = true;
-    public Health HealthOwn {get; private set;}
+    public Health HealthOwn { get; private set; }
 
     private void Awake()
     {
