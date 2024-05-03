@@ -15,23 +15,23 @@ public class Health : MonoBehaviour
         CurrentHealth = _maxHealth;
     }
 
-    public void GetDamage(int damage)
+    public void DealDamage(int damage)
     {
-        CurrentHealth -= damage;
-        HealthChanged?.Invoke(CurrentHealth);
+        if (damage > 0)
+        {
+            CurrentHealth = Mathf.Clamp(CurrentHealth - damage, 0, _maxHealth);
+
+            HealthChanged?.Invoke(CurrentHealth);
+        }
     }
 
     public void Heal(int healPower)
     {
-        if(CurrentHealth + healPower >= MaxHealth)
+        if (healPower > 0)
         {
-            CurrentHealth = MaxHealth;
-        }
-        else
-        {
-            CurrentHealth += healPower;            
-        }
+            CurrentHealth = Mathf.Clamp(CurrentHealth + healPower, 0, _maxHealth);
 
-        HealthChanged?.Invoke(CurrentHealth);
+            HealthChanged?.Invoke(CurrentHealth);
+        }        
     }
 }

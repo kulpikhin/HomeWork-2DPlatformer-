@@ -33,7 +33,7 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent<Enemy>(out Enemy enemy))
         {
-            enemy.HealthOwn.GetDamage(_damaga);
+            enemy.HealthOwn.DealDamage(_damaga);
             Destroy(gameObject);
         }
         else if (collision.gameObject.layer == _groundMask)

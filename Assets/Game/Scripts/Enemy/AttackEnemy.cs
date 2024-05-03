@@ -47,7 +47,7 @@ public class AttackEnemy : MonoBehaviour
     {
         if (_canAttack && _isRecharge == false)
         {
-            _target.HealthOwn.GetDamage(_damage);
+            _target.HealthOwn.DealDamage(_damage);
             _explosion.Play();
             StartCoroutine(Recharge());
         }            

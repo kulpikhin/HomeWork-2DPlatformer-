@@ -1,34 +1,13 @@
 using System.Collections;
-using UnityEngine.UI;
 using UnityEngine;
 
-[RequireComponent(typeof(Slider))]
-public class SmoothHpBar : MonoBehaviour
+public class SmoothHpBar : HPBar
 {
-    [SerializeField] private Health _health;
     [SerializeField] private float _speedHpBar;
 
     private Coroutine _smoothlyChangeHPBar;
-    private Slider _healthBar;
 
-    private void Awake()
-    {
-        _healthBar = GetComponent<Slider>();
-        _healthBar.maxValue = _health.MaxHealth;
-        _healthBar.value = _healthBar.maxValue;
-    }
-
-    private void OnEnable()
-    {
-        _health.HealthChanged += StartSmoothlyChangeHP;
-    }
-
-    private void OnDisable()
-    {
-        _health.HealthChanged -= StartSmoothlyChangeHP;
-    }
-
-    private void StartSmoothlyChangeHP(int curentHealth)
+    protected override void ChangeHPBar(int curentHealth)
     {
         if (_smoothlyChangeHPBar != null)        
             StopCoroutine(_smoothlyChangeHPBar);        
@@ -38,9 +17,9 @@ public class SmoothHpBar : MonoBehaviour
 
     private IEnumerator SmoothlyChangeHp(int curentHealth)
     {
-        while (_healthBar.value != curentHealth)
+        while (_hpBar.value != curentHealth)
         {
-            _healthBar.value = Mathf.MoveTowards(_healthBar.value, curentHealth, _speedHpBar);
+            _hpBar.value = Mathf.MoveTowards(_hpBar.value, curentHealth, _speedHpBar);
             yield return null;
         }
     }

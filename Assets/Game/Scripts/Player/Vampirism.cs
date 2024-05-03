@@ -1,36 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(CircleCollider2D))]
 public class Vampirism : MonoBehaviour
 {
+    [SerializeField] private int _tickDrainAmount;
+    [SerializeField] private int _cooldawnDuration;
     [SerializeField] private InputSystem _inputSystem;
     [SerializeField] private Health _playerHealth;
-    [SerializeField] private int _tickDrainAmount;
+    [SerializeField] private Slider _cooldawnBar;
 
-    private float _durationCount = 6f;
+    private float _durationAmount = 6f;
     private float _tickCount = 0.1f;
 
     private Coroutine _drainCoroutine;
     private Coroutine _durationCoroutine;
+    private Coroutine _cooldawnCoroutine;
 
     private WaitForSeconds _waitTenthSeconds;
     private WaitForSeconds _waitDurationSeconds;
 
-    private CircleCollider2D _collider2D;
-    private SpriteRenderer _spriteRenderer;
-
     private bool _isActive = false;
+    private bool _isCooldawn = false;
+
+    private SpriteRenderer _spriteRenderer;
     private List<Enemy> _enemies = new List<Enemy>();
 
     private void Start()
     {
-        _collider2D = GetComponent<CircleCollider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _waitTenthSeconds = new WaitForSeconds(_tickCount);
-        _waitDurationSeconds = new WaitForSeconds(_durationCount);
+        _waitDurationSeconds = new WaitForSeconds(_durationAmount);
+        _cooldawnBar.maxValue = _cooldawnDuration;
+        _cooldawnBar.value = _cooldawnDuration;
     }
 
     private void OnEnable()
@@ -42,6 +46,7 @@ public class Vampirism : MonoBehaviour
     {
         _inputSystem.VampirismKeyGeted -= StartDrainCoroutine;
     }
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -59,15 +64,28 @@ public class Vampirism : MonoBehaviour
         }
     }
 
-    private void StartDrainCoroutine()
+    private void StartCooldawnCorutine()
     {
-        if (_drainCoroutine != null)
+        if(_cooldawnCoroutine != null)
         {
-            StopCoroutine(_drainCoroutine);
+            StopCoroutine(_cooldawnCoroutine);
         }
 
-        SetActive(true);
-        _drainCoroutine = StartCoroutine(DrainCoroutine());
+        _cooldawnCoroutine = StartCoroutine(CooldawnCorutine());
+    }
+
+    private void StartDrainCoroutine()
+    {
+        if(!_isCooldawn && _enemies.Count > 0)
+        {
+            if (_drainCoroutine != null)
+            {
+                StopCoroutine(_drainCoroutine);
+            }
+
+            SetActive(true);
+            _drainCoroutine = StartCoroutine(DrainCoroutine());
+        }
     }
 
     private void StartDurationCorutine()
@@ -80,6 +98,23 @@ public class Vampirism : MonoBehaviour
         _durationCoroutine = StartCoroutine(DurationCorutine());
     }
 
+    private IEnumerator CooldawnCorutine()
+    {
+        float startTime = Time.time;
+
+        _isCooldawn = true;
+
+        while (Time.time - startTime < _cooldawnDuration)
+        {
+            float passedTimeCount = Time.time - startTime;
+            _cooldawnBar.value = passedTimeCount;
+
+            yield return null;
+        }
+
+        _isCooldawn = false;
+    }
+
     private IEnumerator DurationCorutine()
     {
         yield return _waitDurationSeconds;
@@ -90,15 +125,13 @@ public class Vampirism : MonoBehaviour
     private IEnumerator DrainCoroutine()
     {
         StartDurationCorutine();
+        StartCooldawnCorutine();
 
         while (_isActive)
         {
             SelectTarget();
             yield return _waitTenthSeconds;
         }
-
-        StopCoroutine(_durationCoroutine);
-        StopCoroutine(_drainCoroutine);
     }
 
     private void SelectTarget()
@@ -106,32 +139,37 @@ public class Vampirism : MonoBehaviour
         if (_enemies.Count > 0)
         {
             for (int i = 0; i < _enemies.Count; i++)
-            {                
-                if (_enemies[i].HealthOwn.CurrentHealth - _tickDrainAmount <= 0)
-                {
-                    Enemy dyingEnemy = _enemies[i];
-                    _enemies.RemoveAt(i);
-                    Drain(dyingEnemy);
-                    i--;
-                }
-                else
-                {
-                    Drain(_enemies[i]);
-                }
+            {
+                int curentEnemyHealth = _enemies[i].HealthOwn.CurrentHealth;
+
+                Drain(_enemies[i]);
+
+                if (curentEnemyHealth - _tickDrainAmount <= 0)                
+                    i--;                                   
             }
+        }
+        else
+        {
+            StopDrain();
         }
     }
 
     private void Drain(Enemy enemy)
     {
-        enemy.HealthOwn.GetDamage(_tickDrainAmount);
+        enemy.HealthOwn.DealDamage(_tickDrainAmount);
         _playerHealth.Heal(_tickDrainAmount);
     }
 
     private void SetActive(bool active)
     {
         _isActive = active;
-        _collider2D.enabled = active;
         _spriteRenderer.enabled = active;
+    }
+
+    private void StopDrain()
+    {
+        StopCoroutine(_drainCoroutine);
+        StopCoroutine(_durationCoroutine);
+        SetActive(false);
     }
 }
